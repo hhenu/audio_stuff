@@ -1,6 +1,8 @@
 #!/home/henu/brogramming/audio_stuff/.venv/bin/python3.12
 """
 Discrete Fourier Transform functionality
+
+This is currently helplessly slow so it's better to use numpy.fft.rfft
 """
 
 import numpy as np
@@ -40,7 +42,7 @@ def hann(y: np.ndarray) -> np.ndarray:
     return y * .5 * (1 - np.cos(2 * np.pi * nn / n))
 
 
-@timer
+# @timer
 def rdft(y: np.ndarray) -> np.ndarray:
     """
     Is supposed to compute the Discrete Fourier Transform on the given real

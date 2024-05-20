@@ -26,28 +26,37 @@ def wave_read(fname: str) -> tuple[np.ndarray, int]:
         return np.reshape(temp, (-1, f.getnchannels())), f.getframerate()
 
 
-def spectrogram(data: np.ndarray, fs: int, bins: int = 100) -> None:
+def spectrogram(data: np.ndarray, fs: int, nperseg: int, noverlap: int) -> None:
     """
-    :param data:
-    :param fs:
-    :param bins:
-    :return:
+    Computes and plots a spectrogram  of the given data
+    :param data: Some data that changes as a function of time
+    :param fs: Sample rate
+    :param nperseg: Amount of data points to use for one sequence of data
+    :param noverlap: Amount of points that overlap with the previous sequence
     """
     if len(data.shape) >= 2:
         raise ValueError("Only one channel is supported")
+    if noverlap >= nperseg:
+        raise ValueError("noverlap can not be larger than nperseg")
     n = data.shape[0]
-    dt = n // bins  # Amount of samples in one bin
-    fig = plt.figure()
-    s, e = 0, dt  # Start and end indices
-    t = np.zeros(shape=(bins, ))
-    freqs = np.arange(0, dt // 2 + 1, dtype=int) * (fs / dt)
-    amps = np.zeros(shape=(t.shape[0], freqs.shape[0]))
-    for i in range(bins):
+    step = nperseg - noverlap
+    nsegs = n // step
+    t = np.zeros(shape=(nsegs, ), dtype=float)
+    freqs = np.arange(0, nperseg // 2 + 1, dtype=int) * (fs / nperseg)
+    amps = np.zeros(shape=(t.shape[0], freqs.shape[0]), dtype=float)
+    s, e = 0, nperseg  # Start and end indices
+    for i in range(nsegs):
         t[i] = (e + s) / 2 / fs
-        amps[i] = np.abs(np.fft.rfft(data[s:e])) / fs
-        s = e
-        e += dt
+        amp =  np.abs(np.fft.rfft(data[s:e])) / fs
+        if amp.shape[0] < amps.shape[1]:
+            # Pad the output of fft with some zeros if it's too small
+            pad = np.zeros(shape=(amps.shape[1] - amp.shape[0], ))
+            amp = np.append(amp, pad)
+        amps[i] = amp
+        s += step
+        e += step
     amps = amps.T
+    fig = plt.figure()
     plt.pcolormesh(t, freqs, amps, shading="gouraud")
     c = plt.colorbar()
     c.set_label("Amplitude [dB/Hz]")
@@ -63,7 +72,7 @@ def main() -> None:
     args = parser.parse_args()
     input_path = args.filename
     data, fs = wave_read(fname=input_path)
-    spectrogram(data=data[:, 0], fs=fs, bins=800)
+    spectrogram(data=data[:, 0], fs=fs, nperseg=200, noverlap=50)
 
 
 if __name__ == "__main__":
