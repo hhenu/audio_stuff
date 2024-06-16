@@ -1,4 +1,3 @@
-#!/home/henu/brogramming/audio_stuff/.venv/bin/python3.12
 """
 Plays a single .wav file
 """

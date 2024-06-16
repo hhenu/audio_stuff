@@ -1,4 +1,3 @@
-#!/home/henu/brogramming/audio_stuff/.venv/bin/python3.12
 """
 A humble effort to create some sort of a spectrogram for audio
 """
@@ -66,8 +65,8 @@ def spectrogram(data: np.ndarray, fs: int, nperseg: int, noverlap: int) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(prog="spegram.py",
-                                     description="Plots a spectrogram of the given .wav file")
+    desc = "Plots a spectrogram of the given .wav file"
+    parser = argparse.ArgumentParser(prog="spegram.py", description=desc)
     parser.add_argument("filename", help="Name of the .wav file")
     args = parser.parse_args()
     input_path = args.filename
