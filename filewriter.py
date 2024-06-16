@@ -1,4 +1,3 @@
-#!/home/henu/brogramming/audio_stuff/.venv/bin/python3.12
 """
 Some sort of Buffer class to hold the most recent audio data or some shit
 """
