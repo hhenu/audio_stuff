@@ -1,18 +1,26 @@
 """
-Some sort of Buffer class to hold the most recent audio data or some shit
+Some functionality to write and read .wav files
 """
 
 import io
-import wave
 import numpy as np
 
 from typing import Any
 
 
-class FileWriter:
-    def __init__(self, file: wave.Wave_write) -> None:
+class WavReader:
+    def __init__(self, filepath: str) -> None:
         """
-        :param file: File handler of a file to write stuff in
+        :param filepath:
+        :return:
+        """
+        self.filename = filepath
+
+
+class WavWriter:
+    def __init__(self, filepath: str) -> None:
+        """
+        :param filepath:
         :return:
         """
         self.file = file
@@ -26,9 +34,7 @@ class FileWriter:
         :param status:
         :return:
         """
-        data_b = indata.tobytes()
-        self._size += len(data_b)
-        self.file.writeframes(data_b)
+        ...
 
     def get_written_bytes(self) -> int:
         """
