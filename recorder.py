@@ -3,13 +3,14 @@ Tool for recording audio (in .wav format) or some shit
 """
 
 import time
-import wave
 import argparse
 import numpy as np
 import sounddevice as sd
 
 from typing import Any
-from filewriter import FileWriter
+from wavfile_io import WavWriter
+
+BITS_PER_SAMPLE = 16
 
 
 def _format_nbytes(nbytes: int) -> str:
@@ -48,13 +49,11 @@ def record(out_file_path: str, fs: int, channels: int) -> None:
     try:
         duration = 0
         dt = .1
-        with wave.open(out_file_path, "w") as f:
-            fw = FileWriter(file=f)
-            f.setnchannels(channels)
-            f.setsampwidth(2)
-            f.setframerate(fs)
-            with sd.InputStream(samplerate=fs, channels=channels, callback=fw.write,
-                                dtype="int16"):
+        with open(out_file_path, "wb") as f:
+            fw = WavWriter(file_obj=f, channels=channels, bits_per_sample=BITS_PER_SAMPLE,
+                           sample_rate=fs)
+            with sd.InputStream(samplerate=fs, channels=channels, callback=fw.write_data,
+                                dtype=f"int{BITS_PER_SAMPLE}"):
                 while True:
                     duration += dt
                     nbytes = _format_nbytes(nbytes=fw.get_written_bytes())
